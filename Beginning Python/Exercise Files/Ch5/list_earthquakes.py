@@ -35,7 +35,7 @@ def printResults(data):
         if "California" in  i["properties"]["place"]:
           ca +=1
 
-        
+        #
       # sort the table my magnitude
 
     sorted_table =  sorted(eq_table, key=operator.itemgetter(1))
@@ -43,7 +43,7 @@ def printResults(data):
 
     print ("| Where earthquake occured                                     | Mag | Times felt")
     print ("----------------------------------------------------------------------------")
-    for item in sorted_table:
+    # for item in sorted_table:
         print("| " + item[0] + " "*(60-len(item[0])), "|", "%2.1f" %(item[1]) + " |" + str(item[2]) )
     print("Total Soda Springs Quakes: {} ".format(sp))
     print("Total California Quakes: {} ".format(ca))
