@@ -1,0 +1,50 @@
+# 
+# Example file for parsing and processing JSON
+# (For Python 3.x, be sure to use the ExampleSnippets3.txt file)
+
+import urllib2
+import json
+
+def printResults(data):
+  elist = [100];
+  index = 0;
+  # Use the json module to load the string data into a dictionary
+  theJSON = json.loads(data)
+  
+  # now we can access the contents of the JSON like any other Python object
+  if "title" in theJSON["metadata"]:
+    print str(theJSON["metadata"]["count"]) + " earthquakes today " 
+    
+    for i in theJSON["features"]:
+        if i["properties"]["mag"] >= 4:
+            # create a list so I can sort it
+            elist[index] = i["properties"]["mag"]
+            index = index + 1
+#     elist.sort()
+#     print elist
+
+#             print str(i["properties"]["mag"]) + " - "  + i["properties"]["place"] 
+  else: 
+    print "no data"   
+  
+def main():
+  # define a variable to hold the source URL
+  # In this case we'll use the free data feed from the USGS
+  # This feed lists all earthquakes for the last day larger than Mag 2.5
+  urlData = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson"
+    # read the data from the URL and print it
+  webResp = urllib2.urlopen(urlData)  
+#   print webResp.getcode()
+  if (webResp.getcode() == 200):
+      data = webResp.read()
+      printResults(data)
+      
+      
+  
+  
+
+#   printResults(data)
+  
+
+if __name__ == "__main__":
+  main()

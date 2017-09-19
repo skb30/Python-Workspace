@@ -1,0 +1,95 @@
+# 
+# Example file for parsing and processing JSON
+# (For Python 3.x, be sure to use the ExampleSnippets3.txt file)
+
+import urllib2
+import json
+import collections
+
+def printResults(data):
+  eq_table =  []
+
+  aTable = {}
+  index = 0
+  # Use the json module to load the string data into a dictionary
+  theJSON = json.loads(data)
+  
+  # now we can access the contents of the JSON like any other Python object
+  if "title" in theJSON["metadata"]:
+    print str(theJSON["metadata"]["count"]) + " earthquakes today " 
+    
+    # create the table columns
+    for i in theJSON["features"]:
+#         eq_table.append([[i["properties"]["place"][i["properties"]["mag"][i["properties"]["felt"]])
+        eq_table.append([i["properties"]["place"],i["properties"]["mag"],i["properties"]["felt"]])
+#         usgs_place.append(i["properties"]["place"])  
+#         usgs_mag.append( i["properties"]["mag"]) 
+#         usgs_felt.append(i["properties"]["felt"])
+        
+        # create the table rows
+#         eq_table.append([[usgs_place[0]][usgs_mag[0]][usgs_felt[0]]])
+    for item in eq_table:
+        
+#         print "%s  %2.1f %s" %(item[0], item[1], item[2])
+        print "|" + item[0] + " "*(55-len(item[0])), "|",
+        print "%2.1f" %(item[1]) + " |",
+        print item[2]
+#         str(item[1])
+      
+#         str(item[1])
+# #         print 20-len(item[0])
+#         print "|", item[0], item[1], item[2]
+#         " "*(4-len(str(item[1]))),
+#         "|",
+#         " "*(4-len(str(item[2])))
+    
+ 
+#         
+#         if i["properties"]["mag"] >= 4:
+#             # create a list so I can sort it
+#             
+#             aTable[i["properties"]["mag"]] = i['properties']["place"] 
+#             od = collections.OrderedDict(sorted(aTable.items()))
+#             mag.append(i["properties"]["mag"])
+#             mag.append(i['properties']["place"])
+  else: 
+    print "no data"
+     # print only the events where at least 1 person reported feeling something
+  print "Events that were felt:"
+  
+#   for i in theJSON["features"]:
+#       feltReports = i["properties"]["felt"]
+#       if (feltReports != None) & (feltReports > 0):
+#           print "%2.1f" % i["properties"]["mag"], i["properties"]["place"], " reported " + str(feltReports) + " times"
+#             
+#   print str(len(aTable)) + " over 4.0"        
+#   for i in od:
+#     print i, od
+#     list(sorted(aTable.keys()))        
+     
+#     print place
+
+#             print str(i["properties"]["mag"]) + " - "  + i["properties"]["place"] 
+     
+  
+def main():
+  # define a variable to hold the source URL
+  # In this case we'll use the free data feed from the USGS
+  # This feed lists all earthquakes for the last day larger than Mag 2.5
+  urlData = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson"
+    # read the data from the URL and print it
+  webResp = urllib2.urlopen(urlData)  
+#   print webResp.getcode()
+  if (webResp.getcode() == 200):
+      data = webResp.read()
+      printResults(data)
+      
+      
+  
+  
+
+#   printResults(data)
+  
+
+if __name__ == "__main__":
+  main()

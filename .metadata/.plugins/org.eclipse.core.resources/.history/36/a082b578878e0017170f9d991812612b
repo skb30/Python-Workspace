@@ -1,0 +1,25 @@
+
+
+
+
+
+
+
+class CalcSpeed:
+    def __init__(self,distance,time):
+        self.size = distance
+        self.time = time
+        self.speed = 0
+        
+    def CalcSpeed(self):
+             
+
+
+def main():
+    print "hello kitty"
+
+
+
+
+if __name__ == "__main__":
+  main()

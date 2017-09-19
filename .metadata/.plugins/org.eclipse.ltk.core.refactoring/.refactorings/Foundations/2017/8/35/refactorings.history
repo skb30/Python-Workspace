@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Foundations/Exercise Files/MyClasses.py&apos; to &apos;play_with_classes.py&apos;" description="Rename resource &apos;MyClasses.py&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Exercise Files/MyClasses.py" name="play_with_classes.py" stamp="1504208564659" updateReferences="true"/>
+</session>

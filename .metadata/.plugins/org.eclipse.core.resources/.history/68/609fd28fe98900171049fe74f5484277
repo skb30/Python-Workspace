@@ -1,0 +1,22 @@
+#
+# Example file for working with filesystem shell methods
+# (For Python 3.x, be sure to use the ExampleSnippets3.txt file)
+import os
+import shutil
+from zipfile import ZipFile
+from os import path
+from shutil import make_archive
+
+def main():
+    if path.exists("textfile.txt"):
+    # get the path to the file in the current directory
+        src = path.realpath("textfile.txt");   
+        head, tail = path.split(src)   
+        
+        print "path: " + head
+        print "file: " + tail
+        
+        bk = src + ".bkup"
+        print bk
+if __name__ == "__main__":
+  main()

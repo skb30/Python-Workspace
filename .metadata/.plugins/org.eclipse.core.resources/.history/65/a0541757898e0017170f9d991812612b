@@ -1,0 +1,34 @@
+
+
+
+
+
+
+
+class CalcSpeed:
+    def __init__(self,distance,time):
+        self.size = distance
+        self.time = time
+        self.speed = 0
+        
+    def speed(self):
+
+#     print str(timedelta(minutes=timeToAirport))[:-3]
+    
+        minsToHours = 60 / time
+    #     minsToHours = timeToAirport / 60
+        speed = minsToHours * distance
+        return speed     
+
+
+def main():
+    print "Calculate the speed"
+    c = CalcSpeed(80, 20)
+    print c.speed(80,20)
+    print "The speed is: {} ".format(c)
+
+
+
+
+if __name__ == "__main__":
+  main()

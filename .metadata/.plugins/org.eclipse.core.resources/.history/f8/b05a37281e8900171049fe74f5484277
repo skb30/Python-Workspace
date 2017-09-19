@@ -1,0 +1,100 @@
+#
+# Example file for working with functions
+# (For Python 3.x, be sure to use the ExampleSnippets3.txt file)
+from datetime import timedelta
+
+# define a function
+def func1():
+  print "I am a function"
+
+# function that takes arguments
+def func2(arg1, arg2):
+  print arg1, " ", arg2
+
+# function that returns a value
+def cube(x):
+  return x*x*x
+
+# function with default value for an argument
+def power(num, x=1):
+  result = 1;
+  for i in range(x):
+    result = result * num  
+  return result
+
+#function with variable number of arguments
+def multi_add(*args):
+  result = 0;
+  for x in args:
+    result = result + x
+  return result
+  
+def count_it(str):
+    total = 0;
+    # Loop over every index in string.
+    for index in range(0, len(str)):
+
+        # Get one-character substring.
+        
+        total = int(str[index]) + total
+
+    return total
+def count_vowel(str):
+    total = 0
+    for i in range (0, len(str)):
+        if (str[i] == 'a' or str[i] == 'e' or str[i] == 'i' or str[i] == 'o' or str[i] == 'u' ) :   
+            total = total + 1
+    print "The number of vowels in %s is: %d" %(str, total)
+    sum = str.count('a') + str.count('e') + str.count('i') + str.count('o') + str.count('u') 
+    print "The number of vowels in %s is: %d" %(str, sum)
+    
+    
+def cal_air_speed(milesToAirport, timeToAirport):
+
+    print (timedelta(minutes=timeToAirport))[:-3]
+    
+    minsToHours = 60 / timeToAirport
+#     minsToHours = timeToAirport / 60
+    airSpeed = minsToHours * milesToAirport
+    print airSpeed
+        
+def print_multi_table():
+    times = 'X'
+    eq    = '='
+    
+    for multi in range(0,13):
+        for multiplier in range (0,13):
+#             s = repr(multi) + 'X' + repr(multiplier) + '=' + repr(multi * multiplier)
+#             print (s)
+#             print "%x %s %x %s %x" multi 
+#             print "%d %c %d %c %d" %(multi, times, multiplier, eq, (multi * multiplier))  
+            print multi*multiplier,
+        print
+          
+def sumNum(n):
+    for num in range(0,n+1):
+        if ((num % 3) == 0):
+            print num,
+        elif ((num % 5) == 0):
+            print num,
+    print         
+    c = n - 32 
+    c = c * 5 / 9
+    print "celecius = %d" %c
+     
+#     print_multi_table()
+cal_air_speed(800, 61)  
+# count_vowel("bananna")        
+# sumNum(75)                   
+# print_multi_table()
+# print count_it("00011")
+#func1()
+#print func1()
+#print func1
+#func2(10,20)
+# print func2(10,20)
+# print cube(3)
+# print power(2)
+# print power(2,3)
+# print power(x=3, num=2)
+# print multi_add(4,5,10,4)
