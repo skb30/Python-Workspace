@@ -4,15 +4,11 @@
 # Copyright 2010 The BearHeart Group, LLC
 
 def main():
-    testfunc(42)
-    testfunc(22,66)
-    testfunc(1,2,3)
 
-def testfunc(number1, number2 = None, number3 = 9999):
-    print('This is a test function', number1, number2, number3 )
+    # Example func return a range
+    for i in testfunc():
+        print(i, end=' ')
 
-# example of a dummy function
-def mock(number, str):
-    pass
-
+def testfunc():
+    return range(25)
 if __name__ == "__main__": main()
