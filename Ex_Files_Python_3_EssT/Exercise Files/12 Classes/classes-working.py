@@ -1,37 +1,37 @@
 #!/usr/bin/python3
 
-class Duck:
-     # example of a class that might be used as getting and setting config params
-    def __init__(self, **kwargs):
-        # self._ is used to signify the attribute will be accessed by using only accessor methods
+class Animal:
+    def walk(self):
+        print("I'm walking here")
 
-        # create a dict attribute
-        self._variables = kwargs
+    def clothes(self):
+        print("I'm sporting fine threads")
 
-    # set the dict with key/value pair passed as an arg
-    def set_variables(self, k, v):
+    def talk(self):
+        print("I have something to say")
 
-        self._variables[k] = v
-
-    def get_variables(self, k):
-
-        return  self._variables[k]
-
+class Duck (Animal):
     def quack(self):
-        print('Quaaack!', self._v)
+        print('Quaaack!')
 
     def walk(self):
-        print('Walks like a duck.', self._v)
+        print('Walks like a duck.')
+
+class Dog(Animal):
+    def clothes(self):
+        print("I have a brown and white coat")
+
+    def talk(self):
+        super().talk()
+        print("Bow Wow!")
 
 def main():
-    frank = Duck(id = 777)
-    donald = Duck(color = 'black')
-    print(donald.get_variables('color'))
-    donald.set_variables('color', 'red')
-    print(donald.get_variables('color'))
-    donald.set_variables('id', 500)
-    print(donald.get_variables('id'))
-    print(frank.get_variables('id'))
+    donald = Duck()
+    donald.clothes()
+    donald.walk()
+    trooper = Dog()
+    trooper.walk()
+    trooper.talk()
 
 
 
