@@ -16,8 +16,13 @@ def printResults(data):
   # sorted_table = []
   tuple_table = ()
   # Use the json module to load the string data into a dictionary
-  theJSON = json.loads(data)
-  num = theJSON["metadata"]["count"]
+  try:
+     theJSON = json.loads(data)
+     num = theJSON["metadata"]["count"]
+
+  except :
+    print("Unable to access JSON data. Possible no internet connection ")
+    return
 
   # now we can access the contents of the JSON like any other Python object
   if "title" in theJSON["metadata"]:

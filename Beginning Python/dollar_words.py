@@ -5,7 +5,6 @@ def calculate(word):
     value    = 0
     sum      = 0
 
-
     # create the dictionary using the ascii range
     for letter in range(97, 123):
         alphabet[chr(letter)] = value
@@ -13,7 +12,6 @@ def calculate(word):
 
     for letter in word:
         sum += alphabet[letter]
-
 
     print ("The value of {} is {}".format(word, sum))
 
