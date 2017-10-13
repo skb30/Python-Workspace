@@ -18,16 +18,19 @@ class Building:
         for x in range(1, self.NumberOfElevators+1):
             self.AddElevator(x)
 
-    def SetCurrentFloorForElevators(self):
-        for Elevator in self.Elevators:
-            Elevator.CurrentFloor = GetRandomFloor(1, self.NumberOfFloors + 1, 1)
-            print("Elevator.Current = %s" % (Elevator.CurrentFloor))
-
     def AddFloor(self,name):
-        self.Floors.append(Floor(name))
+        self.Floors.append(name)
 
     def AddElevator(self,name):
-        self.Elevators.append(Elevator(name))
+        self.Elevators.append(name)
+
+        for Elevator in self.Elevators:
+            print(Elevator.name)
+
+        exit()
+
+        self.Elevators.index(name).CurrentFloor = GetRandomFloor(1, self.NumberOfFloors + 1, 1)
+#        self.Elevators[-1].CurrentFloor = GetRandomFloor(1, self.NumberOfFloors + 1, 1)
 
     def ScheduleElevators(self):
         for Floor in self.Floors:
@@ -142,7 +145,7 @@ class Elevator:
         self.IsActive = False
         self.DoorsAreOpen = False
 
-        self.CurrentFloor = None
+        self.CurrentFloor = 0
 
         self.IsInTransitToDestinationFloor = False
         self.DestinationFloor = 0
@@ -152,6 +155,7 @@ class Elevator:
 
         self.Log = []
         self.Steps = 0
+
 
     def Direction(self):
             if self.IsInTransitToCallingFloor:
@@ -263,6 +267,7 @@ def ChooseRandomValue(Value1,Value2):
         return Value1
     else:
         return Value2
+    Threezero01
 
 def OpenDoorsOnFloor(TargetFloor,InfoMessage):
     for Floor in MyBuilding.Floors:
@@ -307,8 +312,6 @@ def ChooseDestinationFloor(Elevator):
     Elevator.WriteLog("E%s is currently on F%s selected F%s as destination floor" % (Elevator.name,Elevator.CurrentFloor,Elevator.DestinationFloor))
 
 
-MyBuilding = []
-
 def main():
 
     random.seed()
@@ -317,7 +320,6 @@ def main():
     ElevatorCarsInBuilding = 2
 
     MyBuilding = Building('3001 Via Conquistador',FloorsInBuilding,ElevatorCarsInBuilding)
-    MyBuilding.SetCurrentFloorForElevators()
 
     print("Bringing all Elevators to Idle. Starting Simulation")
     for Elevator in MyBuilding.Elevators:
