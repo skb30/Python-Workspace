@@ -58,7 +58,7 @@ class Building:
 
     def StepElevators(self):
         for Elevator in self.Elevators:
-            Elevator.Step()
+            Elevator.Step(self)
             self.TotalSteps += 1
 
 
@@ -146,7 +146,7 @@ class Elevator:
         self.IsActive = False
         self.DoorsAreOpen = False
 
-        self.CurrentFloor = 0
+        self.CurrentFloor = getRandomFloor(1,maxFloors,0)
 
         self.IsInTransitToDestinationFloor = False
         self.DestinationFloor = 0
@@ -171,19 +171,19 @@ class Elevator:
                     return 'down'
 
 
-    def Step(self):
+    def Step(self,myBuilding):
         if self.IsActive:
             if self.IsInTransitToCallingFloor:
                 if self.CurrentFloor == self.CallingFloor:
                     if self.DoorsAreOpen != True:
                         self.writeLog("E%s arrived at calling F%s and opened its doors" % (self.name,self.CallingFloor))
                         self.DoorsAreOpen = True
-                        openDoorsOnFloor(self.CurrentFloor,"F%s E%s arrived on calling floor" % (self.CallingFloor,self.name))
+                        openDoorsOnFloor(myBuilding,self.CurrentFloor,"F%s E%s arrived on calling floor" % (self.CallingFloor,self.name))
                         return 1
                     else:
-                        chooseDestinationFloor(self)
-                        closeDoorsOnFloor(self.CurrentFloor,"F%s Destination floor F%s was selected in E%s" % (self.CurrentFloor,self.DestinationFloor,self.name))
-                        turnCallButtonOff(self)
+                        chooseDestinationfloor(self,myBuilding)
+                        closeDoorsOnFloor(myBuilding,self.CurrentFloor,"F%s Destination floor F%s was selected in E%s" % (self.CurrentFloor,self.DestinationFloor,self.name))
+                        turnCallButtonOff(self, myBuilding)
                         self.DoorsAreOpen = False
                         self.IsInTransitToCallingFloor = False
                         self.IsInTransitToDestinationFloor = True
@@ -195,10 +195,10 @@ class Elevator:
                     if self.DoorsAreOpen != True:
                         self.DoorsAreOpen = True
                         self.writeLog("E%s arrived at destination F%s and opened its doors" % (self.name,self.DestinationFloor))
-                        openDoorsOnFloor(self.CurrentFloor,"F%s E%s arrived on destination floor. Called from F%s" % (self.CurrentFloor, self.name, self.CallingFloor))
+                        openDoorsOnFloor(myBuilding,self.CurrentFloor,"F%s E%s arrived on destination floor. Called from F%s" % (self.CurrentFloor, self.name, self.CallingFloor))
                         return 3
                     else:
-                        closeDoorsOnFloor(self.CurrentFloor,None)
+                        closeDoorsOnFloor(myBuilding, self.CurrentFloor,None)
                         self.DoorsAreOpen = False
                         self.IsInTransitToDestinationFloor = False
                         self.writeLog("E%s closed its doors on destination F%s and is now Idle" % (self.name,self.CurrentFloor))
@@ -269,7 +269,7 @@ def chooseRandomValue(value1,value2):
     else:
         return value2
 
-def openDoorsOnFloor(targetFloor,infoMessage):
+def openDoorsOnFloor(myBuilding,targetFloor,infoMessage):
     for floor in myBuilding.Floors:
         if floor.name == targetFloor:
             if infoMessage != None:
@@ -277,8 +277,8 @@ def openDoorsOnFloor(targetFloor,infoMessage):
             floor.DoorsAreOpen = True
             floor.writeLog("F%s doors opened" % (floor.name))
 
-def closeDoorsOnFloor(targetFloor,InfoMessage):
-    for floor in myBuilding.floors:
+def closeDoorsOnFloor(myBuilding,targetFloor,InfoMessage):
+    for floor in myBuilding.Floors:
         if floor.name == targetFloor:
             if InfoMessage != None:
                 floor.writeLog(InfoMessage)
@@ -296,7 +296,7 @@ def turnCallButtonOff(Elevator, myBuilding):
                 floor.DownCallButtonIsOn = False
                 floor.writeLog("F%s Down call button is off" % (floor.name))
 
-def chooseDestinationfloor(Elevator):
+def chooseDestinationfloor(Elevator, myBuilding):
     Randomfloor = None
     for floor in myBuilding.Floors:
         if floor.name == Elevator.CurrentFloor:
@@ -316,21 +316,18 @@ def main():
 
     random.seed()
 
-    floorsInBuilding = 20
-    elevatorCarsInBuilding = 2
+    floorsInBuilding = 1000
+    elevatorCarsInBuilding = 100
 
     myBuilding = Building('3001 Via Conquistador',floorsInBuilding,elevatorCarsInBuilding)
 
     print("Bringing all Elevators to Idle. Starting Simulation")
     for elevator in myBuilding.Elevators:
-        # print(type(Elevator))
-        # print("The elevator type is: {}".format(type(Elevator))
         elevator.transitionFromOutOfServiceToIdle()
 
 
     for floor in myBuilding.Floors:
-        buttonPressed = getRandomFloor(1, elevator.CurrentFloor, elevator.CurrentFloor)
-        # floor.callButtonPressed(buttonPressed,floorsInBuilding)
+        floor.callButtonPressed(chooseRandomValue("up","down"),floorsInBuilding)
 
     while True:
         myBuilding.ScheduleElevators()
