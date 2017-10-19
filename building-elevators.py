@@ -2,17 +2,26 @@ import sys
 import time
 import random
 
-class City:
+class Street:
     def __init__(self,name):
         self.name = name
         self.buildings = []
-        self.Log = []
+        self.log = []
 
     def addBuilding(self,name, numOfFloors, numberOfElevators):
         self.buildings.append(Building(name, numOfFloors, numberOfElevators))
 
-    def writeLog(self,LogLine):
-        self.Log.append(LogLine)
+    def writeLog(self,logLine):
+        self.log.append(logLine)
+
+
+class City:
+    def __init__(self, name):
+        self.name = name
+        self.streets = []
+        self.log = []
+
+
 
 class Building:
     def __init__(self,name,numOfFloors,NumberOfElevators):
@@ -267,6 +276,12 @@ class Elevator:
     def writeLog(self,LogLine):
         self.Log.append(LogLine)
 
+
+
+
+class SkyScraper(Building):
+    def __init__(self):
+        pass
 # Proxy Methods (Global)
 def getRandomFloor(minvalue,maxvalue,excludevalue):
     randomNumber = random.randint(minvalue,maxvalue)
@@ -310,60 +325,84 @@ def turnCallButtonOff(Elevator, building):
                 floor.downCallButtonIsOn = False
                 floor.writeLog("F%s: Down call button is off" % (floor.name))
 
-def chooseDestinationfloor(Elevator, building):
+def chooseDestinationfloor(elevator, building):
     Randomfloor = None
     for floor in building.Floors:
-        if floor.name == Elevator.currentFloor:
+        if floor.name == elevator.currentFloor:
             if floor.upCallButtonIsOn:
-                RandomFloor = getRandomFloor(Elevator.currentFloor,building.numOfFloors,Elevator.currentFloor)
+                RandomFloor = getRandomFloor(elevator.currentFloor,building.numOfFloors,elevator.currentFloor)
                 break
 
             if floor.downCallButtonIsOn:
-                RandomFloor = getRandomFloor(1,Elevator.currentFloor,Elevator.currentFloor)
+                RandomFloor = getRandomFloor(1,elevator.currentFloor,elevator.currentFloor)
                 break
 
-    Elevator.destinationFloor = RandomFloor
-    Elevator.writeLog("E%s is currently on F%s selected F%s as destination floor" % (Elevator.name,Elevator.currentFloor,Elevator.destinationFloor))
+    elevator.destinationFloor = RandomFloor
+    elevator.writeLog("E%s is currently on F%s selected F%s as destination floor" % (elevator.name,elevator.currentFloor,elevator.destinationFloor))
 
 def createBuilding(buildingAddress,floorsInBuilding,numOfElevators):
         return Building(buildingAddress,floorsInBuilding,numOfElevators)
 
 
+
 def main():
     random.seed()
 
-    myCity = City('Windom')
-    myCity.addBuilding('3001 Via Conquistador',10,1)
-    myCity.addBuilding('2364 Arguello Place',10,2)
-
-    for building in myCity.buildings:
-
-        building.writeLog("Building Name = {}".format(building.name))
-        building.writeLog("Bringing all Elevators to Idle. Starting Simulation on Building {}".format(building.name))
-        for elevator in building.Elevators:
-            elevator.transitionFromOutOfServiceToIdle(building.name)
-        #
-
-        for floor in building.Floors:
-            floor.callButtonPressed(chooseRandomValue("up","down"),building.numOfFloors)
-        #
-        while True:
-            building.scheduleElevators()
-            building.stepElevators()
-            if building.allElevatorsAreIdle() and building.allCallButtonsAreOff():
-                building.writeLog("All Elevators are now Idle on building {}.".format(building.name))
-                break
-
-        for elevator in building.Elevators:
-            elevator.transitionFromIdleToOutOfService(building)
-            elevator.writeLog("Total Elevator E{} steps = {}".format(elevator.name, elevator.steps))
-
-        building.writeLog("Total elevator steps for building {} = {}".format(building.name,building.Totalsteps))
+    myCity = City('Santa Clara')
 
 
-    print("City name = {}\n".format(myCity.name))
-    for building in myCity.buildings:
-        building.printLogs()
+    # Create a street
+    arguello = Street('Arguello Place')
+
+    # build some buildings on the street
+    arguello.addBuilding('3001',10,1)
+    arguello.addBuilding('2364',10,2)
+    arguello.addBuilding('7000',20, 2)
+
+    # create another street
+    conq = Street('Conquestador')
+
+    # build some buildings for this street
+    conq.addBuilding('100', 10, 1)
+    conq.addBuilding('6244', 10, 2)
+    conq.addBuilding('8000', 20, 2)
+
+
+    # add the streets to a list
+    streets = [arguello, conq ]
+
+    # start the simulations for each building on a street
+    for street in streets:
+
+        # create the buildings on the street
+        for building in street.buildings:
+
+            building.writeLog("Building Name = {}".format(building.name))
+            building.writeLog("Bringing all Elevators to Idle. Starting Simulation on Building {}".format(building.name))
+            for elevator in building.Elevators:
+                elevator.transitionFromOutOfServiceToIdle(building.name)
+            #
+
+            for floor in building.Floors:
+                floor.callButtonPressed(chooseRandomValue("up","down"),building.numOfFloors)
+            #
+            while True:
+                building.scheduleElevators()
+                building.stepElevators()
+                if building.allElevatorsAreIdle() and building.allCallButtonsAreOff():
+                    building.writeLog("All Elevators are now Idle on building {}.".format(building.name))
+                    break
+
+            for elevator in building.Elevators:
+                elevator.transitionFromIdleToOutOfService(building)
+                elevator.writeLog("Total Elevator E{} steps = {}".format(elevator.name, elevator.steps))
+
+            building.writeLog("Total elevator steps for building {} = {}".format(building.name,building.Totalsteps))
+
+
+        print("Street name = {}\n".format(street.name))
+        for building in street.buildings:
+            building.printLogs()
 
     print("Simulation Ended.")
 if __name__ == "__main__":
