@@ -2,6 +2,13 @@ import sys
 import time
 import random
 
+
+class City:
+    def __init__(self, name):
+        self.name = name
+        self.streets = []
+        self.log = []
+
 class Street:
     def __init__(self,name):
         self.name = name
@@ -13,15 +20,6 @@ class Street:
 
     def writeLog(self,logLine):
         self.log.append(logLine)
-
-
-class City:
-    def __init__(self, name):
-        self.name = name
-        self.streets = []
-        self.log = []
-
-
 
 class Building:
     def __init__(self,name,numOfFloors,NumberOfElevators):
@@ -44,15 +42,6 @@ class Building:
 
     def AddElevator(self,name):
         self.Elevators.append(Elevator(name, self.numOfFloors))
-
-
-        # for elevator in self.Elevators:
-        #     print(str(elevator.name))
-        #
-        # exit()
-        #
-        # self.Elevators.index(name).currentFloor = getRandomFloor(1, self.numOfFloors + 1, 1)
-#        self.Elevators[-1].currentFloor = getRandomFloor(1, self.numOfFloors + 1, 1)
 
     def scheduleElevators(self):
         for floor in self.Floors:
@@ -282,7 +271,7 @@ class Elevator:
 class SkyScraper(Building):
     def __init__(self):
         pass
-# Proxy Methods (Global)
+
 def getRandomFloor(minvalue,maxvalue,excludevalue):
     randomNumber = random.randint(minvalue,maxvalue)
     while randomNumber == excludevalue:
@@ -347,9 +336,7 @@ def createBuilding(buildingAddress,floorsInBuilding,numOfElevators):
 
 def main():
     random.seed()
-
-    myCity = City('Santa Clara')
-
+    ##   Create some streets
 
     # Create a street
     arguello = Street('Arguello Place')
@@ -367,12 +354,16 @@ def main():
     conq.addBuilding('6244', 10, 2)
     conq.addBuilding('8000', 20, 2)
 
+    # create a city
+    sc = City('Santa Clara')
 
-    # add the streets to a list
-    streets = [arguello, conq ]
+    # add some streets to the city
+    sc.streets.append(arguello)
+    sc.streets.append(conq)
 
-    # start the simulations for each building on a street
-    for street in streets:
+
+    # start the simulations for each building on each street in the city
+    for street in sc.streets:
 
         # create the buildings on the street
         for building in street.buildings:
@@ -400,7 +391,7 @@ def main():
             building.writeLog("Total elevator steps for building {} = {}".format(building.name,building.Totalsteps))
 
 
-        print("Street name = {}\n".format(street.name))
+        print("**** Street name = {} ****\n".format(street.name))
         for building in street.buildings:
             building.printLogs()
 
