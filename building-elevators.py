@@ -217,13 +217,13 @@ class Elevator:
                 return 6
 
 
-    def transitionFromOutOfServiceToIdle(self,building):
+    def transitionFromOutOfServiceToIdle(self,buildingName):
         if self.isOutOfService:
             self.isOutOfService = False
             self.isIdle = True
-            self.writeLog("Building {} - E{} transitioned from OutOfService to Idle. Currently on F{}".format(building.name,self.name,self.currentFloor))
+            self.writeLog("Building {} - E{} transitioned from OutOfService to Idle. Currently on F{}".format(buildingName,self.name,self.currentFloor))
         else:
-            self.writeLog('Building {} - E{} : transitionFromOutOfServiceToIdle: invalid state'.format(building.name,self.name))
+            self.writeLog('Building {} - E{} : transitionFromOutOfServiceToIdle: invalid state'.format(buildingName,self.name))
 
 
     def transitionFromIdleToActive(self):
@@ -312,15 +312,16 @@ def chooseDestinationfloor(Elevator, building):
     Elevator.writeLog("E%s is currently on Floor %s selected Floor %s as destination floor" % (Elevator.name,Elevator.currentFloor,Elevator.destinationFloor))
 
 def createBuilding(buildingAddress,floorsInBuilding,numOfElevators):
-        random.seed()
         return Building(buildingAddress,floorsInBuilding,numOfElevators)
 
 
 def main():
-    
+    random.seed()
+    cities = []
+
     buildings = []
 
-    buildings.append(createBuilding('3001 Via Conquistador',10,1))
+    cities.append(buildings.append(createBuilding('3001 Via Conquistador',10,1)))
     buildings.append(createBuilding('2364 Arguello Place', 10, 2))
     
     for building in buildings:
@@ -328,7 +329,7 @@ def main():
 
         print("Bringing all Elevators to Idle. Starting Simulation on Building {}".format(building.name))
         for elevator in building.Elevators:
-            elevator.transitionFromOutOfServiceToIdle(building)
+            elevator.transitionFromOutOfServiceToIdle(building.name)
         #
 
         for floor in building.Floors:
