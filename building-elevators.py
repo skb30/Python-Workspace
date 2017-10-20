@@ -203,6 +203,8 @@ class Elevator:
         self.isInTransitTocallingFloor = False
         self.callingFloor = 0
 
+        self.originFloor = self.currentFloor
+
         self.log = []
         self.steps = 0
 
@@ -225,14 +227,14 @@ class Elevator:
             if self.isInTransitTocallingFloor:
                 if self.currentFloor == self.callingFloor:
                     if self.doorsAreOpen != True:
-                        self.writeLog("E{} arrived at calling F{} and opened its doors".format(self.name,self.callingFloor))
+                        self.writeLog("E{} arrived at calling F{} and opened its doors. Origin was F{}".format(self.name,self.callingFloor,self.originFloor))
                         self.doorsAreOpen = True
-                        openDoorsOnFloor(building,self.currentFloor,"F{} E{} arrived on calling floor.".format(self.callingFloor,self.name))
+                        openDoorsOnFloor(building,self.currentFloor,"F{} E{} arrived on calling floor F{}. Origin was F{}".format(self.currentFloor,self.name,self.callingFloor,self.originFloor))
                         return
                     else:
                         chooseDestinationfloor(self,building)
-                        closeDoorsOnFloor(building,self.currentFloor,"F{} Destination F{} was selected in E{} for building: {}".format(
-                            self.currentFloor,self.destinationFloor,self.name, building.name))
+                        closeDoorsOnFloor(building,self.currentFloor,"F{} Destination F{} was selected in E{}".format(
+                                                                      self.currentFloor,self.destinationFloor,self.name))
                         turnCallButtonOff(self, building)
                         self.doorsAreOpen = False
                         self.isInTransitTocallingFloor = False
@@ -244,8 +246,8 @@ class Elevator:
                 if self.currentFloor == self.destinationFloor:
                     if self.doorsAreOpen != True:
                         self.doorsAreOpen = True
-                        self.writeLog("E{} arrived at destination F{} and opened its doors".format(self.name,self.destinationFloor))
-                        openDoorsOnFloor(building,self.currentFloor,"F{} E{} arrived on destination floor. Called from F{}".format(self.currentFloor, self.name, self.callingFloor))
+                        self.writeLog("E{} arrived at destination F{} and opened its doors. Called from F{}. Origin was F{}".format(self.name,self.destinationFloor,self.callingFloor,self.originFloor))
+                        openDoorsOnFloor(building,self.currentFloor,"F{} E{} arrived on destination floor F{}. Called from F{}. Originated at F{}.".format(self.currentFloor, self.name, self.currentFloor, self.callingFloor, self.originFloor))
                         return
                     else:
                         closeDoorsOnFloor(building, self.currentFloor,None)
@@ -290,6 +292,7 @@ class Elevator:
         if self.isActive and not self.isInTransitTocallingFloor and not self.isInTransitTodestinationFloor:
             self.isIdle = True
             self.isActive = False
+            self.originFloor = self.currentFloor
             self.writeLog("E{} transitioned from Active to Idle. Currently on F{}".format(self.name,self.currentFloor))
         else:
             self.writeLog('E{} : transitionFromActiveToIdle: invalid state'.format(self.name))
