@@ -9,6 +9,9 @@ class City:
         self.streets = []
         self.log = []
 
+    def writeLog(self, message):
+        self.log.append(message)
+
 class Street:
     def __init__(self,name):
         self.name = name
@@ -221,12 +224,12 @@ class Elevator:
                 self.currentFloor += 1
                 self.writeLog("E%s moved UP to F%s:" % (self.name,self.currentFloor))
                 self.steps += 1
-                return 5
+
             if self.direction() == 'down':
                 self.currentFloor -= 1
                 self.writeLog("E%s moved DOWN to F%s:" % (self.name,self.currentFloor))
                 self.steps += 1
-                return 6
+
 
 
     def transitionFromOutOfServiceToIdle(self,buildingName):
@@ -333,6 +336,8 @@ def createBuilding(buildingAddress,floorsInBuilding,numOfElevators):
         return Building(buildingAddress,floorsInBuilding,numOfElevators)
 
 
+myCounter = 0
+
 
 def main():
     random.seed()
@@ -365,6 +370,9 @@ def main():
     # start the simulations for each building on each street in the city
     for street in sc.streets:
 
+        print()
+        print()
+        print("Starting elevator simulation for city: {}\n".format(sc.name))
         # create the buildings on the street
         for building in street.buildings:
 
@@ -394,6 +402,8 @@ def main():
         print("**** Street name = {} ****\n".format(street.name))
         for building in street.buildings:
             building.printLogs()
+
+        sc.writeLog("Simulation ended for city {}". format(sc.name))
 
     print("Simulation Ended.")
 if __name__ == "__main__":
