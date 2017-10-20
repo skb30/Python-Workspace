@@ -9,8 +9,45 @@ class City:
         self.streets = []
         self.log = []
 
+    def addStreet(self, name):
+        self.streets.append(Street(name))
+
     def writeLog(self, message):
         self.log.append(message)
+
+
+    def printLogs(self):
+        for line in self.log:
+            print(line)
+
+        print()
+
+        for street in self.streets:
+            for line in street.log:
+                print(line)
+
+            print()
+
+            for building in street.buildings:
+                for line in building.log:
+                    print(line)
+
+                print()
+
+                for elevator in building.elevators:
+                    for line in elevator.log:
+                        print(line)
+
+                    print()
+
+                for floor in building.floors:
+                    for line in floor.log:
+                        print(line)
+
+                    print()
+
+        print()
+
 
 class Street:
     def __init__(self,name):
@@ -25,73 +62,72 @@ class Street:
         self.log.append(logLine)
 
 class Building:
-    def __init__(self,name,numOfFloors,NumberOfElevators):
+    def __init__(self,name,numOfFloors,numberOfElevators):
         self.name = name
-        self.Floors = []
-        self.Elevators = []
-        self.Totalsteps = 0
+        self.floors = []
+        self.elevators = []
+        self.totalSteps = 0
         self.numOfFloors = numOfFloors
-        self.NumberOfElevators = NumberOfElevators
-        self.Log = []
+        self.numberOfElevators = numberOfElevators
+        self.log = []
 
         for x in range(1, self.numOfFloors+1):
             self.AddFloor(x)
 
-        for x in range(1, self.NumberOfElevators+1):
+        for x in range(1, self.numberOfElevators+1):
             self.AddElevator(x)
 
     def AddFloor(self,name):
-        self.Floors.append(Floor(name))
+        self.floors.append(Floor(name))
 
     def AddElevator(self,name):
-        self.Elevators.append(Elevator(name, self.numOfFloors))
+        self.elevators.append(Elevator(name, self.numOfFloors))
 
     def scheduleElevators(self):
-        for floor in self.Floors:
+        for floor in self.floors:
             if floor.iscallButtonPressed() and floor.isScheduled != True and floor.doorsAreOpen != True:
-                for elevator in self.Elevators:
+                for elevator in self.elevators:
                     if elevator.isIdle:
-                        floor.writeLog("F%s: scheduled E%s which is currently on F%s" % (floor.name,elevator.name,elevator.currentFloor))
+                        floor.writeLog("F{} scheduled E{} which is currently on F{}".format(floor.name,elevator.name,elevator.currentFloor))
                         floor.scheduleElevator(elevator)
                         break
 
     def allElevatorsAreIdle(self):
-        for elevator in self.Elevators:
+        for elevator in self.elevators:
             if elevator.isActive:
                 return False
 
         return True
 
     def allCallButtonsAreOff(self):
-        for Floor in self.Floors:
+        for Floor in self.floors:
             if Floor.upCallButtonIsOn or Floor.downCallButtonIsOn:
                 return False
 
         return True
 
     def stepElevators(self):
-        for Elevator in self.Elevators:
+        for Elevator in self.elevators:
             Elevator.step(self)
-            self.Totalsteps += 1
 
 
     def printLogs(self):
-        for Elevator in self.Elevators:
-            print("***** E%s log *****" % Elevator.name)
-            for Line in Elevator.Log:
+        for Elevator in self.elevators:
+            print("***** E{} log *****".formatElevator.name)
+            for Line in Elevator.log:
                 print(Line)
             print("\n")
 
         print("\n")
 
-        for Floor in self.Floors:
-            print("***** F%s: log *****" % Floor.name)
-            for Line in Floor.Log:
+        for Floor in self.floors:
+            print("***** F{} log *****".formatFloor.name)
+            for Line in Floor.log:
                 print(Line)
             print("\n")
 
     def writeLog(self,LogLine):
-        self.Log.append(LogLine)
+        self.log.append(LogLine)
 
 class Floor:
     def __init__(self,name):
@@ -102,7 +138,7 @@ class Floor:
         self.nextDownElevator = None
         self.isScheduled = None
         self.doorsAreOpen = False
-        self.Log = []
+        self.log = []
 
     def iscallButtonPressed(self):
         if self.upCallButtonIsOn or self.downCallButtonIsOn:
@@ -123,33 +159,32 @@ class Floor:
 
         elevator.transitionFromIdleToActive()
         elevator.writeLog("E{} is currently on F{}, and is scheduled for F{}".format(elevator.name, elevator.currentFloor, self.name))
-        self.writeLog("E{} is currently on F{}, scheduled for F{}".format(elevator.name, elevator.currentFloor, self.name))
 
     def callButtonPressed(self, UpOrDown,FloorsInBuilding):
         self.isScheduled = False
 
         if self.name == 1:
             self.upCallButtonIsOn = True
-            self.writeLog("F%s: up button was pressed" % (self.name))
+            self.writeLog("F{} up button was pressed".format(self.name))
             return
 
         if self.name == FloorsInBuilding:
             self.downCallButtonIsOn = True
-            self.writeLog("F%s: down button was pressed" % (self.name))
+            self.writeLog("F{} down button was pressed".format(self.name))
             return
 
         if UpOrDown == 'up':
             self.upCallButtonIsOn = True
-            self.writeLog("F%s: up button was pressed" % (self.name))
+            self.writeLog("F{} up button was pressed".format(self.name))
             return
 
         if UpOrDown == 'down':
             self.downCallButtonIsOn = True
-            self.writeLog("F%s: down button was pressed" % (self.name))
+            self.writeLog("F{} down button was pressed".format(self.name))
             return
 
     def writeLog(self,LogLine):
-        self.Log.append(LogLine)
+        self.log.append(LogLine)
 
 
 class Elevator:
@@ -168,7 +203,7 @@ class Elevator:
         self.isInTransitTocallingFloor = False
         self.callingFloor = 0
 
-        self.Log = []
+        self.log = []
         self.steps = 0
 
 
@@ -190,45 +225,47 @@ class Elevator:
             if self.isInTransitTocallingFloor:
                 if self.currentFloor == self.callingFloor:
                     if self.doorsAreOpen != True:
-                        self.writeLog("Building: {} E{} arrived at calling F{} and opened its doors".format(building.name,self.name,self.callingFloor))
+                        self.writeLog("E{} arrived at calling F{} and opened its doors".format(self.name,self.callingFloor))
                         self.doorsAreOpen = True
-                        openDoorsOnFloor(building,self.currentFloor,"F{}: E{} arrived on calling floor.".format(self.callingFloor,self.name))
+                        openDoorsOnFloor(building,self.currentFloor,"F{} E{} arrived on calling floor.".format(self.callingFloor,self.name))
                         return
                     else:
                         chooseDestinationfloor(self,building)
-                        closeDoorsOnFloor(building,self.currentFloor,"F{}: Destination F{} was selected in E{} for building: {}".format(
+                        closeDoorsOnFloor(building,self.currentFloor,"F{} Destination F{} was selected in E{} for building: {}".format(
                             self.currentFloor,self.destinationFloor,self.name, building.name))
                         turnCallButtonOff(self, building)
                         self.doorsAreOpen = False
                         self.isInTransitTocallingFloor = False
                         self.isInTransitTodestinationFloor = True
-                        self.writeLog("E%s closed its doors on calling F%s: and is now headed to F%s:" % (self.name,self.currentFloor,self.destinationFloor))
+                        self.writeLog("E{} closed its doors on calling F{} and is now headed to F{}".format(self.name,self.currentFloor,self.destinationFloor))
                         return
 
             if self.isInTransitTodestinationFloor:
                 if self.currentFloor == self.destinationFloor:
                     if self.doorsAreOpen != True:
                         self.doorsAreOpen = True
-                        self.writeLog("E%s arrived at destination F%s: and opened its doors" % (self.name,self.destinationFloor))
-                        openDoorsOnFloor(building,self.currentFloor,"F%s: E%s arrived on destination floor. Called from F%s:" % (self.currentFloor, self.name, self.callingFloor))
+                        self.writeLog("E{} arrived at destination F{} and opened its doors".format(self.name,self.destinationFloor))
+                        openDoorsOnFloor(building,self.currentFloor,"F{} E{} arrived on destination floor. Called from F{}".format(self.currentFloor, self.name, self.callingFloor))
                         return
                     else:
                         closeDoorsOnFloor(building, self.currentFloor,None)
                         self.doorsAreOpen = False
                         self.isInTransitTodestinationFloor = False
-                        self.writeLog("E%s closed its doors on destination F%s: and is now Idle" % (self.name,self.currentFloor))
+                        self.writeLog("E{} closed its doors on destination F{} and is now Idle".format(self.name,self.currentFloor))
                         self.transitionFromActiveToIdle(building)
                         return
 
             if self.direction() == "up":
                 self.currentFloor += 1
-                self.writeLog("E%s moved UP to F%s:" % (self.name,self.currentFloor))
+                self.writeLog("E{} moved UP to F{}".format(self.name,self.currentFloor))
                 self.steps += 1
+                building.totalSteps += 1
 
             if self.direction() == 'down':
                 self.currentFloor -= 1
-                self.writeLog("E%s moved DOWN to F%s:" % (self.name,self.currentFloor))
+                self.writeLog("E{} moved DOWN to F{}".format(self.name,self.currentFloor))
                 self.steps += 1
+                building.totalSteps += 1
 
 
 
@@ -236,37 +273,37 @@ class Elevator:
         if self.isOutOfService:
             self.isOutOfService = False
             self.isIdle = True
-            self.writeLog("Building {} - E{} transitioned from OutOfService to Idle. Currently on F{}".format(buildingName,self.name,self.currentFloor))
+            self.writeLog("E{} transitioned from OutOfService to Idle. Currently on F{}".format(self.name,self.currentFloor))
         else:
-            self.writeLog('Building {} - E{} : transitionFromOutOfServiceToIdle: invalid state'.format(buildingName,self.name))
+            self.writeLog('E{} : transitionFromOutOfServiceToIdle: invalid state'.format(self.name))
 
 
     def transitionFromIdleToActive(self):
         if self.isIdle:
             self.isIdle = False
             self.isActive = True
-            self.writeLog("E%s transitioned from Idle to Active" % (self.name))
+            self.writeLog("E{} transitioned from Idle to Active".format(self.name))
         else:
-            self.writeLog('E%s : transitionFromIdleToActive: invalid state' % (self.name))
+            self.writeLog('E{} : transitionFromIdleToActive: invalid state'.format(self.name))
 
     def transitionFromActiveToIdle(self,building):
         if self.isActive and not self.isInTransitTocallingFloor and not self.isInTransitTodestinationFloor:
             self.isIdle = True
             self.isActive = False
-            self.writeLog("E%s transitioned from Active to Idle. Currently on F%d" % (self.name,self.currentFloor))
+            self.writeLog("E{} transitioned from Active to Idle. Currently on F{}".format(self.name,self.currentFloor))
         else:
-            self.writeLog('E%s : transitionFromActiveToIdle: invalid state' % (self.name))
+            self.writeLog('E{} : transitionFromActiveToIdle: invalid state'.format(self.name))
 
     def transitionFromIdleToOutOfService(self,building):
         if self.isIdle:
             self.isOutOfService = True
             self.isIdle = False
-            self.writeLog("E%s transitioned from Idle to OutOfService. Currently on F%d" % (self.name,self.currentFloor))
+            self.writeLog("E{} transitioned from Idle to OutOfService. Currently on F{}. Total Steps = {}".format(self.name, self.currentFloor, self.steps))
         else:
-            self.writeLog('E%s = transitionFromIdleToOutOfService: invalid state' % (self.name))
+            self.writeLog('E{} = transitionFromIdleToOutOfService: invalid state'.format(self.name))
 
     def writeLog(self,LogLine):
-        self.Log.append(LogLine)
+        self.log.append(LogLine)
 
 
 
@@ -291,35 +328,35 @@ def chooseRandomValue(value1,value2):
         return value2
 
 def openDoorsOnFloor(building,targetFloor,infoMessage):
-    for floor in building.Floors:
+    for floor in building.floors:
         if floor.name == targetFloor:
             if infoMessage != None:
                 floor.writeLog(infoMessage)
             floor.doorsAreOpen = True
-            floor.writeLog("F%s: doors opened" % (floor.name))
+            floor.writeLog("F{} doors opened".format(floor.name))
 
 def closeDoorsOnFloor(building,targetFloor,InfoMessage):
-    for floor in building.Floors:
+    for floor in building.floors:
         if floor.name == targetFloor:
             if InfoMessage != None:
                 floor.writeLog(InfoMessage)
             floor.doorsAreOpen = False
-            floor.writeLog("F%s: doors closed" % (floor.name))
+            floor.writeLog("F{} doors closed".format(floor.name))
 
 def turnCallButtonOff(Elevator, building):
-    for floor in building.Floors:
+    for floor in building.floors:
         if floor.name == Elevator.currentFloor:
             if Elevator.currentFloor < Elevator.destinationFloor:
                 floor.upCallButtonIsOn = False
-                floor.writeLog("F%s: Up call button is off" % (floor.name))
+                floor.writeLog("F{} Up call button is off".format(floor.name))
 
             if Elevator.currentFloor > Elevator.destinationFloor:
                 floor.downCallButtonIsOn = False
-                floor.writeLog("F%s: Down call button is off" % (floor.name))
+                floor.writeLog("F{} Down call button is off".format(floor.name))
 
 def chooseDestinationfloor(elevator, building):
     Randomfloor = None
-    for floor in building.Floors:
+    for floor in building.floors:
         if floor.name == elevator.currentFloor:
             if floor.upCallButtonIsOn:
                 RandomFloor = getRandomFloor(elevator.currentFloor,building.numOfFloors,elevator.currentFloor)
@@ -330,7 +367,7 @@ def chooseDestinationfloor(elevator, building):
                 break
 
     elevator.destinationFloor = RandomFloor
-    elevator.writeLog("E%s is currently on F%s selected F%s as destination floor" % (elevator.name,elevator.currentFloor,elevator.destinationFloor))
+    elevator.writeLog("E{} is currently on F{} selected F{} as destination floor".format(elevator.name,elevator.currentFloor,elevator.destinationFloor))
 
 def createBuilding(buildingAddress,floorsInBuilding,numOfElevators):
         return Building(buildingAddress,floorsInBuilding,numOfElevators)
@@ -341,71 +378,55 @@ myCounter = 0
 
 def main():
     random.seed()
-    ##   Create some streets
 
-    # Create a street
-    arguello = Street('Arguello Place')
+    myCity = City('Santa Clara')
+    myCity.addStreet('Arguello Place')
+    myCity.addStreet('Via Conquistador')
 
-    # build some buildings on the street
-    arguello.addBuilding('3001',10,1)
-    arguello.addBuilding('2364',10,2)
-    arguello.addBuilding('7000',20, 2)
-
-    # create another street
-    conq = Street('Conquestador')
-
-    # build some buildings for this street
-    conq.addBuilding('100', 10, 1)
-    conq.addBuilding('6244', 10, 2)
-    conq.addBuilding('8000', 20, 2)
-
-    # create a city
-    sc = City('Santa Clara')
-
-    # add some streets to the city
-    sc.streets.append(arguello)
-    sc.streets.append(conq)
+    for street in myCity.streets:
+        for x in range(1,random.randint(2,5)):
+            randomStreetNumber = random.randint(1000,9999)
+            randomNumberOfFloors = random.randint(2,20)
+            randomnumberOfElevators = random.randint(1,2)
+            street.addBuilding(randomStreetNumber, randomNumberOfFloors, randomnumberOfElevators)
 
 
-    # start the simulations for each building on each street in the city
-    for street in sc.streets:
-
-        print()
-        print()
-        print("Starting elevator simulation for city: {}\n".format(sc.name))
-        # create the buildings on the street
+    for street in myCity.streets:
+        myCity.writeLog("Street Created: {} in City: {}".format(street.name, myCity.name))
         for building in street.buildings:
+            myCity.writeLog("Building Created: {} {} on {} street in {}, floors = {}, elevators = {}".format(building.name,
+                                                                                                             street.name,
+                                                                                                             street.name,
+                                                                                                             myCity.name,
+                                                                                                             building.numOfFloors,
+                                                                                                             building.numberOfElevators))
 
-            building.writeLog("Building Name = {}".format(building.name))
-            building.writeLog("Bringing all Elevators to Idle. Starting Simulation on Building {}".format(building.name))
-            for elevator in building.Elevators:
+    for street in myCity.streets:
+        for building in street.buildings:
+            building.writeLog("Building Name: {} {}, floors = {}, elevators = {}".format(building.name,street.name,building.numOfFloors,building.numberOfElevators))
+            building.writeLog("Building Name: {} {} - Starting Simulation - Bringing all Elevators to Idle.".format(building.name,street.name))
+            for elevator in building.elevators:
                 elevator.transitionFromOutOfServiceToIdle(building.name)
-            #
 
-            for floor in building.Floors:
+            for floor in building.floors:
                 floor.callButtonPressed(chooseRandomValue("up","down"),building.numOfFloors)
-            #
+
             while True:
                 building.scheduleElevators()
                 building.stepElevators()
                 if building.allElevatorsAreIdle() and building.allCallButtonsAreOff():
-                    building.writeLog("All Elevators are now Idle on building {}.".format(building.name))
+                    building.writeLog("Building Name: {} {} - All Elevators are now Idle".format(building.name, street.name))
                     break
 
-            for elevator in building.Elevators:
+            for elevator in building.elevators:
                 elevator.transitionFromIdleToOutOfService(building)
-                elevator.writeLog("Total Elevator E{} steps = {}".format(elevator.name, elevator.steps))
 
-            building.writeLog("Total elevator steps for building {} = {}".format(building.name,building.Totalsteps))
+            building.writeLog("Building Name: {} {} - Total elevator steps = {}".format(building.name, street.name, building.totalSteps))
 
 
-        print("**** Street name = {} ****\n".format(street.name))
-        for building in street.buildings:
-            building.printLogs()
+    myCity.printLogs()
 
-        sc.writeLog("Simulation ended for city {}". format(sc.name))
 
-    print("Simulation Ended.")
 if __name__ == "__main__":
     main()
 
