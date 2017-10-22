@@ -11,6 +11,7 @@ class City:
 
     def addStreet(self, name):
         self.streets.append(Street(name))
+        return self.streets[-1]
 
     def writeLog(self, message):
         self.log.append(message)
@@ -57,6 +58,7 @@ class Street:
 
     def addBuilding(self,name, numOfFloors, numberOfElevators):
         self.buildings.append(Building(name, numOfFloors, numberOfElevators))
+        return self.buildings[-1]
 
     def writeLog(self,logLine):
         self.log.append(logLine)
@@ -387,22 +389,20 @@ def main():
     myCity.addStreet('Via Conquistador')
 
     for street in myCity.streets:
-        for x in range(1,random.randint(2,5)):
-            randomStreetNumber = random.randint(1000,9999)
-            randomNumberOfFloors = random.randint(2,20)
-            randomnumberOfElevators = random.randint(1,2)
-            street.addBuilding(randomStreetNumber, randomNumberOfFloors, randomnumberOfElevators)
-
-
-    for street in myCity.streets:
         myCity.writeLog("Street Created: {} in City: {}".format(street.name, myCity.name))
-        for building in street.buildings:
-            myCity.writeLog("Building Created: {} {} on {} street in {}, floors = {}, elevators = {}".format(building.name,
+
+        randomNumberOfBuildings = random.randint(2,10)
+        for x in range(1,randomNumberOfBuildings):
+            randomStreetNumber = random.randint(1000,9999)
+            randomNumberOfFloors = random.randint(2,100)
+            randomnumberOfElevators = random.randint(1,8)
+            thisBuilding = street.addBuilding(randomStreetNumber, randomNumberOfFloors, randomnumberOfElevators)
+            myCity.writeLog("Building Created: {} {} on {} street in {}, floors = {}, elevators = {}".format(thisBuilding.name,
                                                                                                              street.name,
                                                                                                              street.name,
                                                                                                              myCity.name,
-                                                                                                             building.numOfFloors,
-                                                                                                             building.numberOfElevators))
+                                                                                                             thisBuilding.numOfFloors,
+                                                                                                             thisBuilding.numberOfElevators))
 
     for street in myCity.streets:
         for building in street.buildings:
