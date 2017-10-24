@@ -63,6 +63,8 @@ class Street:
     def writeLog(self,logLine):
         self.log.append(logLine)
 
+
+
 class Building:
     def __init__(self,name,numOfFloors,numberOfElevators):
         self.name = name
@@ -130,6 +132,20 @@ class Building:
 
     def writeLog(self,LogLine):
         self.log.append(LogLine)
+
+class HighRiseBuilding(Building):
+    def __init__(self,name,numOfFloors,numberOfElevators,numberOfExpressElevators):
+        super().__init__(name,numOfFloors,numberOfElevators)
+        self.numberOfExpressElevators = numberOfExpressElevators
+
+        for x in range(1, self.numberOfExpressElevators+1):
+            self.AddExpressElevator(x)
+        self.
+
+    def AddExpressElevator(self,name):
+        self.elevators.append(ExpressElevator(name, targetFloor))
+
+
 
 class Floor:
     def __init__(self,name):
@@ -311,11 +327,14 @@ class Elevator:
         self.log.append(LogLine)
 
 
+class ExpressElevator(Elevator):
+    def __init__(self, name, maxFloors):
+        super().__init__(name,numOfFloors,numberOfElevators)
+        self.targetFloor = targetFloor
 
 
-class SkyScraper(Building):
-    def __init__(self):
-        pass
+
+
 
 def getRandomFloor(minvalue,maxvalue,excludevalue):
     randomNumber = random.randint(minvalue,maxvalue)
@@ -396,7 +415,8 @@ def main():
             randomStreetNumber = random.randint(1000,9999)
             randomNumberOfFloors = random.randint(2,100)
             randomnumberOfElevators = random.randint(1,8)
-            thisBuilding = street.addBuilding(randomStreetNumber, randomNumberOfFloors, randomnumberOfElevators)
+            isHighRise = chooseRandomValue("yes","no")
+            thisBuilding = street.addBuilding(randomStreetNumber, randomNumberOfFloors, randomnumberOfElevators, isHighRise)
             myCity.writeLog("Building Created: {} {} on {} street in {}, floors = {}, elevators = {}".format(thisBuilding.name,
                                                                                                              street.name,
                                                                                                              street.name,
