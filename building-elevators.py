@@ -9,6 +9,7 @@ class City:
         self.streets = []
         self.log = []
 
+    # linkage to children
     def addStreet(self, name):
         self.streets.append(Street(name))
         return self.streets[-1]
@@ -55,7 +56,7 @@ class Street:
         self.name = name
         self.buildings = []
         self.log = []
-
+    # create children objects
     def addBuilding(self,name, numOfFloors, numberOfElevators):
         self.buildings.append(Building(name, numOfFloors, numberOfElevators))
         return self.buildings[-1]
@@ -74,15 +75,20 @@ class Building:
         self.log = []
 
         for x in range(1, self.numOfFloors+1):
-            self.AddFloor(x)
+            self.addFloor(x)
 
         for x in range(1, self.numberOfElevators+1):
-            self.AddElevator(x)
+            self.addElevator(x)
 
-    def AddFloor(self,name):
+    def listElevators(self):
+        print("List of elevators in building {}".format(self.name))
+        for elevator in self.elevators:
+            print("Elevator {} current floor is: {}".format(elevator.name, elevator.currentFloor))
+
+    def addFloor(self,name):
         self.floors.append(Floor(name))
 
-    def AddElevator(self,name):
+    def addElevator(self,name):
         self.elevators.append(Elevator(name, self.numOfFloors))
 
     def scheduleElevators(self):
@@ -210,6 +216,14 @@ class Elevator:
         self.log = []
         self.steps = 0
 
+    # @property
+    # def currentFloor(self):
+    #      return self.currentFloor
+    #
+    # @currentFloor.setter
+    # def setCurrentFloor(self,floorNumber):
+    #     self.currentFloor = floorNumber
+
 
     def direction(self):
             if self.isInTransitTocallingFloor:
@@ -310,12 +324,19 @@ class Elevator:
     def writeLog(self,LogLine):
         self.log.append(LogLine)
 
+class ExpressElevator(Elevator):
+
+    def __init__(self, name, maxfloors):
+
+        super().__init__(self, name, maxFloors)
+
+    def addExpressElevator(self):
+
+        super().currentFloor = 50
 
 
 
-class SkyScraper(Building):
-    def __init__(self):
-        pass
+
 
 def getRandomFloor(minvalue,maxvalue,excludevalue):
     randomNumber = random.randint(minvalue,maxvalue)
@@ -374,8 +395,6 @@ def chooseDestinationfloor(elevator, building):
     elevator.destinationFloor = RandomFloor
     elevator.writeLog("E{} is currently on F{} selected F{} as destination floor".format(elevator.name,elevator.currentFloor,elevator.destinationFloor))
 
-def createBuilding(buildingAddress,floorsInBuilding,numOfElevators):
-        return Building(buildingAddress,floorsInBuilding,numOfElevators)
 
 
 myCounter = 0
@@ -388,9 +407,17 @@ def main():
     myCity.addStreet('Arguello Place')
     myCity.addStreet('Via Conquistador')
 
+    hr = HighRiseBuilding('SkyScraper', 100, 10, 5)
+
+    print(hr.numOfExpressElevators)
+    hr.addExpressElevator("Express Elevator 1", 100)
+    hr.listElevators()
+
+
+    return
+
     for street in myCity.streets:
         myCity.writeLog("Street Created: {} in City: {}".format(street.name, myCity.name))
-
         randomNumberOfBuildings = random.randint(2,10)
         for x in range(1,randomNumberOfBuildings):
             randomStreetNumber = random.randint(1000,9999)
