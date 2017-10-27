@@ -56,12 +56,13 @@ class Street:
         self.name = name
         self.buildings = []
         self.log = []
+        self.numberOfExpressElevators = 1
     # create children objects
-    def addBuilding(self,name, numberOfFloors, numberberOfElevators,isHighRise):
+    def addBuilding(self,name, numberOfFloors, numberOfElevators,isHighRise):
         if isHighRise:
-            self.buildings.append(HighRiseBuilding("HighRise {}".format(name), numberOfFloors, numberberOfElevators,2))
+            self.buildings.append(HighRiseBuilding("{} High-Rise ".format(name), numberOfFloors, numberOfElevators,self.numberOfExpressElevators))
         else:
-            self.buildings.append(Building(name, numberOfFloors, numberberOfElevators))
+            self.buildings.append(Building(name, numberOfFloors, numberOfElevators))
         return self.buildings[-1]
 
     def writeLog(self,logLine):
@@ -70,20 +71,23 @@ class Street:
 
 
 class Building(object):
-    def __init__(self,name,numberOfFloors,numberberOfElevators):
+    def __init__(self,name,numberOfFloors,numberOfElevators):
         self.name = name
         self.floors = []
         self.elevators = []
         self.totalSteps = 0
         self.numberOfFloors = numberOfFloors
-        self.numberberOfElevators = numberberOfElevators
+
+        self.numberOfElevators = numberOfElevators
         self.log = []
 
         for x in range(1, self.numberOfFloors+1):
             self.addFloor(x)
 
-        for x in range(1, self.numberberOfElevators+1):
+        for x in range(1, self.numberOfElevators+1):
             self.addElevator(x)
+    @property
+    def getNumberOfFloors(self): return len(self.floors)
 
     def listElevators(self):
         print("List of elevators in building {}".format(self.name))
@@ -145,21 +149,24 @@ class Building(object):
         self.log.append(LogLine)
 
 class HighRiseBuilding(Building):
-    def __init__(self,name,numberberOfFloors,numberberOfElevators,numberberOfExpressElevators):
-        super().__init__(name,numberberOfFloors,numberberOfElevators)
 
-        self.numberberOfExpressElevators = numberberOfExpressElevators
+    def __init__(self, name, numberOfFloors, numberOfElevators, numberOfExpressElevators):
+        self.numberOfFloors = numberOfFloors + 1
+        super().__init__(name, self.numberOfFloors, numberOfElevators)
+
+        self.numberOfExpressElevators = numberOfExpressElevators
 
 
-        for x in range(1, self.numberberOfExpressElevators+1):
-            self.AddExpressElevator("xpress {}".format(x),numberberOfFloors,numberberOfElevators)
+        for x in range(1, self.numberOfExpressElevators):
+            self.AddExpressElevator("xpress {}".format(x),self.numberOfFloors,numberOfElevators)
 
         # add a hilo pad floor to the high rise
         super().addFloor(super().getNextFloor(),'hilo-pad')
+        print("Building Name: {}has added Hilo-Pad floor{} ".format(name, super().getNumberOfFloors))
 
 
-    def AddExpressElevator(self,name,numberOfFloors,numberberOfElevators):
-        self.elevators.append(ExpressElevator(name, numberOfFloors, numberberOfElevators))
+    def AddExpressElevator(self,name,numberOfElevators):
+        self.elevators.append(ExpressElevator(name, self.numberOfFloors, numberOfElevators))
 
 
 
@@ -356,7 +363,7 @@ class Elevator(object):
 
 class ExpressElevator(Elevator):
 
-    def __init__(self, name, numberOfFloors, numberberOfElevators):
+    def __init__(self, name, numberOfFloors, numberOfElevators):
         super().__init__(name, numberOfFloors)
 
     # override
@@ -406,14 +413,11 @@ def turnCallButtonOff(Elevator, building):
 
 def chooseDestinationfloor(elevator, building):
 
-
-    if type(building) == "HighRiseBuilding":
-        print("High Rise Elevator type: {}".format(type(building)))
     Randomfloor = None
     for floor in building.floors:
         if floor.name == elevator.currentFloor:
             if floor.upCallButtonIsOn:
-                RandomFloor = getRandomFloor(elevator.currentFloor,building.numberOfFloors,elevator.currentFloor)
+                RandomFloor = getRandomFloor(elevator.currentFloor,building.getNumberOfFloors,elevator.currentFloor)
                 break
 
             if floor.downCallButtonIsOn:
@@ -431,40 +435,36 @@ def main():
     myCity.addStreet('Arguello Place')
     myCity.addStreet('Via Conquistador')
 
-    # hr = HighRiseBuilding('SkyScraper', 100, 10, 5)
-    #
-    # print(hr.numberOfExpressElevators)
-    # hr.addExpressElevator("Express Elevator 1", 100)
-    # hr.listElevators()
-
-
 
     for street in myCity.streets:
         myCity.writeLog("Street Created: {} in City: {}".format(street.name, myCity.name))
-        randomNumberOfBuildings = random.randint(2,5)
+        # randomNumberOfBuildings = random.randint(2,5)
+        randomNumberOfBuildings = 2
         for x in range(1,randomNumberOfBuildings):
             randomStreetNumber = random.randint(1000,9999)
             randomNumberOfFloors = random.randint(2,20)
-            randomnumberberOfElevators = random.randint(1,4)
+            randomnumberOfElevators = random.randint(1,4)
             # changed to 1 and 0 for true and false
             isHighRise = chooseRandomValue(0,1)
-            thisBuilding = street.addBuilding(randomStreetNumber, randomNumberOfFloors, randomnumberberOfElevators, isHighRise)
+            thisBuilding = street.addBuilding(randomStreetNumber, randomNumberOfFloors, randomnumberOfElevators, isHighRise)
+            # thisBuilding = street.addBuilding(randomStreetNumber, 11, 1, 1)
+
             myCity.writeLog("Building Created: {} {} on {} street in {}, floors = {}, elevators = {}".format(thisBuilding.name,
                                                                                                              street.name,
                                                                                                              street.name,
                                                                                                              myCity.name,
                                                                                                              thisBuilding.numberOfFloors,
-                                                                                                             thisBuilding.numberberOfElevators))
+                                                                                                             thisBuilding.numberOfElevators))
 
     for street in myCity.streets:
         for building in street.buildings:
-            building.writeLog("Building Name: {} {}, floors = {}, elevators = {}".format(building.name,street.name,building.numberOfFloors,building.numberberOfElevators))
+            building.writeLog("Building Name: {} {}, floors = {}, elevators = {}".format(building.name,street.name,building.getNumberOfFloors,building.numberOfElevators))
             building.writeLog("Building Name: {} {} - Starting Simulation - Bringing all Elevators to Idle.".format(building.name,street.name))
             for elevator in building.elevators:
                 elevator.transitionFromOutOfServiceToIdle(building.name)
 
             for floor in building.floors:
-                floor.callButtonPressed(chooseRandomValue("up","down"),building.numberOfFloors)
+                floor.callButtonPressed(chooseRandomValue("up","down"),building.getNumberOfFloors)
 
             while True:
                 building.scheduleElevators()
