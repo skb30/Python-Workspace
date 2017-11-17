@@ -89,9 +89,6 @@ class Building(object):
     @property
     def getNumberOfFloors(self): return len(self.floors)
 
-    def __getitem__(self, key):
-
-
     def listElevators(self):
         print("List of elevators in building {}".format(self.name))
         for elevator in self.elevators:
@@ -103,50 +100,39 @@ class Building(object):
     def addElevator(self,name):
         self.elevators.append(Elevator(name, self.numberOfFloors))
 
-    def getActiveElevators(self):
-        for elevator in self.elevators:
-            if elevator.isActive:
-                yield elevator
-
-    def getIdleElevators(self):
-        for elevator in self.elevators:
-            if elevator.isIdle:
-                yield elevator
-
-
-
     def scheduleElevators(self):
         for floor in self.floors:
             # if the call button is pressed, the floor isn't scheduled and the doors are closed
             if floor.iscallButtonPressed() and floor.isScheduled != True and floor.doorsAreOpen != True:
                 # find and schedule the first idle elevator
-                for elevator in self.getIdleElevators():
-                    floor.writeLog("F{} scheduled E{} which is currently on F{}".format(floor.name,elevator.name,elevator.currentFloor))
+                for elevator in self.elevators:
+                    if elevator.isIdle:
+                        floor.writeLog("F{} scheduled E{} which is currently on F{}".format(floor.name,elevator.name,elevator.currentFloor))
 
-                    # moved the following code out of floor.scheduleElevator(elevator). Prevents us from breaking
-                    # Darrell's rule of object destruction. Don't pass object reference to another object because
-                    # they will then have the keys to the castle.
+                        # moved the following code out of floor.scheduleElevator(elevator). Prevents us from breaking
+                        # Darrell's rule of object destruction. Don't pass object reference to another object because
+                        # they will then have the keys to the castle.
 
 
-                    # state  changes to floor and elevator
-                    floor.isScheduled = True
-                    elevator.callingFloor = floor.name
-                    elevator.isInTransitTocallingFloor = True
-                    elevator.isInTransitToDestinationFloor = False
+                        # state  changes to floor and elevator
+                        floor.isScheduled = True
+                        elevator.callingFloor = floor.name
+                        elevator.isInTransitTocallingFloor = True
+                        elevator.isInTransitTodestinationFloor = False
 
-                    # set the floor's next elevator
-                    if floor.upCallButtonIsOn:
-                        floor.nextUpElevator = elevator.name
-                    if floor.downCallButtonIsOn:
-                        floor.nextDownElevator = elevator.name
+                        # set the floor's next elevator
+                        if floor.upCallButtonIsOn:
+                            floor.nextUpElevator = elevator.name
+                        if floor.downCallButtonIsOn:
+                            floor.nextDownElevator = elevator.name
 
-                    # change the elevator's state to active
-                    elevator.transitionFromIdleToActive()
-                    elevator.writeLog("E{} is currently on F{}, and is scheduled for F{}".format(elevator.name,
-                                                                                                 elevator.currentFloor,
-                                                                                                 floor.name))
-                    # do it again for the next elevator in the list.
-                    break
+                        # change the elevator's state to active
+                        elevator.transitionFromIdleToActive()
+                        elevator.writeLog("E{} is currently on F{}, and is scheduled for F{}".format(elevator.name,
+                                                                                                     elevator.currentFloor,
+                                                                                                     floor.name))
+                        # do it again for the next elevator in the list.
+                        break
 
 
 
@@ -168,66 +154,67 @@ class Building(object):
 
     # all the elevators have been scheduled, let's go move them.
     def stepElevators(self):
-        for elevator in self.getActiveElevators():
-            if elevator.isInTransitTocallingFloor:
-                if elevator.currentFloor == elevator.callingFloor:
-                    if elevator.doorsAreOpen != True:
-                        elevator.writeLog(
-                            "E{} arrived at calling F{} and opened its doors. Origin was F{}".format(elevator.name,
-                                                                                                     elevator.callingFloor,
-                                                                                                     elevator.originFloor))
-                        elevator.doorsAreOpen = True
-                        openDoorsOnFloor(self,elevator.currentFloor,
-                                         "F{} E{} arrived on calling floor F{}. Origin was F{}".format(
-                                             elevator.currentFloor, elevator.name, elevator.callingFloor, elevator.originFloor))
-                        return
-                    else:
-                        chooseDestinationfloor(self, elevator)
-                        closeDoorsOnFloor(self, elevator.currentFloor,
-                                          "F{} Destination F{} was selected in E{}".format(
-                                              elevator.currentFloor, elevator.destinationFloor, elevator.name))
-                        turnCallButtonOff(elevator, self)
-                        elevator.doorsAreOpen = False
-                        elevator.isInTransitTocallingFloor = False
-                        elevator.isInTransitToDestinationFloor = True
-                        elevator.writeLog(
-                            "E{} closed its doors on calling F{} and is now headed to F{}".format(elevator.name,
-                                                                                                  elevator.currentFloor,
-                                                                                                  elevator.destinationFloor))
-                        return
+        for elevator in self.elevators:
+            if elevator.isActive:
+                if elevator.isInTransitTocallingFloor:
+                    if elevator.currentFloor == elevator.callingFloor:
+                        if elevator.doorsAreOpen != True:
+                            elevator.writeLog(
+                                "E{} arrived at calling F{} and opened its doors. Origin was F{}".format(elevator.name,
+                                                                                                         elevator.callingFloor,
+                                                                                                         elevator.originFloor))
+                            elevator.doorsAreOpen = True
+                            openDoorsOnFloor(self,elevator.currentFloor,
+                                             "F{} E{} arrived on calling floor F{}. Origin was F{}".format(
+                                                 elevator.currentFloor, elevator.name, elevator.callingFloor, elevator.originFloor))
+                            return
+                        else:
+                            chooseDestinationfloor(self, elevator)
+                            closeDoorsOnFloor(self, elevator.currentFloor,
+                                              "F{} Destination F{} was selected in E{}".format(
+                                                  elevator.currentFloor, elevator.destinationFloor, elevator.name))
+                            turnCallButtonOff(elevator, self)
+                            elevator.doorsAreOpen = False
+                            elevator.isInTransitTocallingFloor = False
+                            elevator.isInTransitTodestinationFloor = True
+                            elevator.writeLog(
+                                "E{} closed its doors on calling F{} and is now headed to F{}".format(elevator.name,
+                                                                                                      elevator.currentFloor,
+                                                                                                      elevator.destinationFloor))
+                            return
 
-            if elevator.isInTransitToDestinationFloor:
-                if elevator.currentFloor == elevator.destinationFloor:
-                    if elevator.doorsAreOpen != True:
-                        elevator.doorsAreOpen = True
-                        elevator.writeLog(
-                            "E{} arrived at destination F{} and opened its doors. Called from F{}. Origin was F{}".format(
-                                elevator.name, elevator.destinationFloor, elevator.callingFloor, elevator.originFloor))
-                        openDoorsOnFloor(self, elevator.currentFloor,
-                                         "F{} E{} arrived on destination floor F{}. Called from F{}. Originated at F{}.".format(
-                                             elevator.currentFloor, elevator.name, elevator.currentFloor, elevator.callingFloor,
-                                             elevator.originFloor))
-                        return
-                    else:
-                        closeDoorsOnFloor(self, elevator.currentFloor, None)
-                        elevator.doorsAreOpen = False
-                        elevator.isInTransitToDestinationFloor = False
-                        elevator.writeLog("E{} closed its doors on destination F{} and is now Idle".format(elevator.name,
-                                                                                                       elevator.currentFloor))
-                        elevator.transitionFromActiveToIdle(self)
-                        return
+                if elevator.isInTransitTodestinationFloor:
+                    if elevator.currentFloor == elevator.destinationFloor:
+                        if elevator.doorsAreOpen != True:
+                            elevator.doorsAreOpen = True
+                            elevator.writeLog(
+                                "E{} arrived at destination F{} and opened its doors. Called from F{}. Origin was F{}".format(
+                                    elevator.name, elevator.destinationFloor, elevator.callingFloor, elevator.originFloor))
+                            openDoorsOnFloor(self, elevator.currentFloor,
+                                             "F{} E{} arrived on destination floor F{}. Called from F{}. Originated at F{}.".format(
+                                                 elevator.currentFloor, elevator.name, elevator.currentFloor, elevator.callingFloor,
+                                                 elevator.originFloor))
+                            return
+                        else:
+                            closeDoorsOnFloor(self, elevator.currentFloor, None)
+                            elevator.doorsAreOpen = False
+                            elevator.isInTransitTodestinationFloor = False
+                            elevator.writeLog("E{} closed its doors on destination F{} and is now Idle".format(elevator.name,
+                                                                                                           elevator.currentFloor))
+                            elevator.transitionFromActiveToIdle(self)
+                            return
 
-            if elevator.direction() == "up":
-                elevator.currentFloor += 1
-                elevator.writeLog("E{} moved UP to F{}".format(elevator.name, elevator.currentFloor))
-                elevator.steps += 1
-                self.totalSteps += 1
+                if elevator.direction() == "up":
+                    elevator.currentFloor += 1
+                    elevator.writeLog("E{} moved UP to F{}".format(elevator.name, elevator.currentFloor))
+                    elevator.steps += 1
+                    self.totalSteps += 1
 
-            if elevator.direction() == 'down':
-                elevator.currentFloor -= 1
-                elevator.writeLog("E{} moved DOWN to F{}".format(elevator.name, elevator.currentFloor))
-                elevator.steps += 1
-                self.totalSteps += 1
+                if elevator.direction() == 'down':
+                    elevator.currentFloor -= 1
+                    elevator.writeLog("E{} moved DOWN to F{}".format(elevator.name, elevator.currentFloor))
+                    elevator.steps += 1
+                    self.totalSteps += 1
 
 
     def printLogs(self):
@@ -334,7 +321,7 @@ class Elevator(object):
 
         self.currentFloor = getRandomFloor(1,maxFloors,0)
 
-        self.isInTransitToDestinationFloor = False
+        self.isInTransitTodestinationFloor = False
         self.destinationFloor = 0
 
         self.isInTransitTocallingFloor = False
@@ -355,7 +342,7 @@ class Elevator(object):
                     return 'up'
                 if self.currentFloor > self.callingFloor:
                     return 'down'
-            if self.isInTransitToDestinationFloor:
+            if self.isInTransitTodestinationFloor:
                 if self.currentFloor < self.destinationFloor:
                     return 'up'
                 if self.currentFloor > self.destinationFloor:
@@ -380,7 +367,7 @@ class Elevator(object):
             self.writeLog('E{} : transitionFromIdleToActive: invalid state'.format(self.name))
 
     def transitionFromActiveToIdle(self,building):
-        if self.isActive and not self.isInTransitTocallingFloor and not self.isInTransitToDestinationFloor:
+        if not (not self.isActive or self.isInTransitTocallingFloor) and not self.isInTransitTodestinationFloor:
             self.isIdle = True
             self.isActive = False
             self.originFloor = self.currentFloor
@@ -465,6 +452,7 @@ def chooseDestinationfloor(building, elevator):
     elevator.destinationFloor = RandomFloor
     elevator.writeLog("E{} is currently on F{} selected F{} as destination floor".format(elevator.name,elevator.currentFloor,elevator.destinationFloor))
 
+
 def main():
     random.seed()
 
@@ -492,8 +480,6 @@ def main():
                                                                                                              myCity.name,
                                                                                                              thisBuilding.numberOfFloors,
                                                                                                              thisBuilding.numberOfElevators))
-
-
     # start the simulation
     for street in myCity.streets:
         for building in street.buildings:
@@ -503,12 +489,6 @@ def main():
             # transistion all elevators to idle in this building
             for elevator in building.elevators:
                 elevator.transitionFromOutOfServiceToIdle(building.name)
-
-            for elevator in building.getIdleElevators():
-                print("E{} is idle".format(elevator.name))
-
-            exit(1)
-
             # randomaly set  all the floors (in the building) call buttons to either up or down
             for floor in building.floors:
                 floor.callButtonPressed(chooseRandomValue("up","down"),building.getNumberOfFloors)
