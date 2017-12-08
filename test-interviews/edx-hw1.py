@@ -1,31 +1,27 @@
 
 def main():
-    epsilon = 50
     answer = ''
-    guess = 50
-    print("Plesae think of a number between 0 and 100 ")
-    limit = 0;
+    low = 0
+    high = 101
 
+    print("Plesae think of a number between 0 and 100!")
+    ans = (high + low) // 2
+    print("Is your secret number {}?".format(ans))
+    answer = input("Enter 'h' to indicate the guess is too high. Enter 'l'" +
+                   " to indicate the guess is too low. Enter 'c' to indicate I guessed correctly.")
 
     while True:
-        answer = input("Is your secert number {} ? ".format(guess))
         if answer == 'c':
              break
         elif answer == 'h':
-            guess = guess - limit
-            x = guess // 2
-            guess = guess - x
-            limit = guess
+            high = ans
         else:
-            guess = guess + limit
-            x = guess // 2
-            guess = guess + x
-            limit = guess
-        print("guess is: {}".format(guess))
+            low  = ans
+        ans = (high + low) // 2
 
 
-
-
-
+        print("Is your secret number {}?".format(ans))
+        answer = input("Enter 'h' to indicate the guess is too high. Enter 'l'" +
+                       " to indicate the guess is too low. Enter 'c' to indicate I guessed correctly.")
 
 if __name__ == "__main__": main()
